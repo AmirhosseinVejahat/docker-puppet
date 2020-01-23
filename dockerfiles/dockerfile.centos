@@ -1,0 +1,8 @@
+FROM centos:latest
+
+COPY packages/puppet6-release-el-7.noarch.rpm /var/
+RUN rpm -Uvh /var/puppet6-release-el-7.noarch.rpm
+RUN yum -y update
+RUN yum -y install nano puppet-agent net-tools
+ENV PATH="/opt/puppetlabs/puppet/bin:${PATH}"
+COPY conf/centos/puppet.conf /etc/puppetlabs/puppet/

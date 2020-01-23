@@ -1,0 +1,56 @@
+version: '3'
+services:
+    puppetserver:
+        image: "puppet/puppetserver"
+        container_name: "puppet-master"
+        hostname: "master.puppet.docker"
+        stdin_open: true
+        tty: true
+        restart: always
+        extra_hosts: 
+            - "ubuntu.puppet.docker:172.20.20.3"
+            - "centos.puppet.docker:172.20.20.4"
+        ports:
+            - "8140:8140"
+        volumes: 
+            - "./puppetlabs/data:/etc/puppetlabs/code"
+        networks:
+            puppetnet:
+                ipv4_address: 172.20.20.2
+    ubuntu:
+        build: 
+            context: ./dockerfiles
+            dockerfile: dockerfile.ubuntu
+        container_name: "ubuntu-agent"
+        hostname:  "ubuntu.puppet.docker"
+        stdin_open: true
+        tty: true
+        restart: always
+        extra_hosts: 
+            - "master.puppet.docker:172.20.20.2"
+            - "centos.pupet.docker:172.20.20.4"
+        networks:
+            puppetnet:
+                ipv4_address: 172.20.20.3
+    centos:
+        build:
+            context: ./dockerfiles
+            dockerfile: dockerfile.centos
+        container_name: "centos-agent"
+        hostname: "ubuntu.puppet.docker"
+        stdin_open: true
+        tty: true
+        restart: always
+        extra_hosts: 
+            - "master.puppet.docker:172.20.20.2"
+            - "ubuntu.puppet.docker:172.20.20.3"
+        networks:
+            puppetnet:
+                ipv4_address: 172.20.20.4
+
+networks:
+    puppetnet:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.20.20.0/24

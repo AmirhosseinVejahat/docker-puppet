@@ -1,0 +1,8 @@
+FROM ubuntu:latest
+
+COPY packages/puppet6-release-bionic.deb /var/
+RUN dpkg -i /var/puppet6-release-bionic.deb
+RUN apt-get update
+RUN apt-get install nano puppet-agent net-tools
+ENV PATH="/opt/puppetlabs/puppet/bin:${PATH}"
+COPY conf/ubuntu/puppet.conf /etc/puppetlabs/puppet/
